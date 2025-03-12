@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.gql.txt": "graphql",
+        "*.svg.txt": "xml"
+    }
+}

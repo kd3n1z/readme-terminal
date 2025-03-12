@@ -1,11 +1,21 @@
 import { Buffer } from 'node:buffer';
-import template from './terminal.svg.txt';
+import terminal from '../resources/terminal.svg.txt';
+import getUserInfoQuery from '../resources/getUserInfo.gql.txt';
+import sourceCodePro from '../resources/SourceCodePro.woff.base64.txt';
 
 export const config = {
     runtime: 'edge',
 };
 
 export default async (req) => {
+    // const url = new URL(req.url);
+
+    // const username = url.searchParams.get('username') ?? 'kd3n1z';
+    // const ignoredLangs = (url.searchParams.get('ignore') ?? '').split(',');
+
+    const username = 'kd3n1z';
+    const ignoredLangs = ['html', 'css', 'scss', 'makefile', 'shell', 'dockerfile'];
+
     const response = await (
         await fetch('https://api.github.com/graphql', {
             method: 'POST',
@@ -13,28 +23,10 @@ export default async (req) => {
                 Authorization: 'Bearer ' + process.env.GITHUB_TOKEN,
             },
             body: JSON.stringify({
-                query: `
-query getUserRepositories($username: String!) {
-  user(login: $username) {
-    repositories(ownerAffiliations: OWNER, isFork: false, privacy: PUBLIC, first: 100) {
-      nodes {
-        name
-        languages(first: 10, orderBy: { field: SIZE, direction: DESC }) {
-          edges {
-            size
-            node {
-              name
-              color
-            }
-          }
-        }
-      }
-    }
-  }
-}
-`,
+                query: getUserInfoQuery,
                 variables: {
-                    username: 'kd3n1z',
+                    username,
+                    avatarSize: 80,
                 },
             }),
         })
@@ -44,12 +36,10 @@ query getUserRepositories($username: String!) {
 
     let totalCount = 0;
 
-    const ignored = ['scss', 'css', 'less', 'makefile', 'html', 'shell', 'dockerfile'];
-
     for (const repo of response.data.user.repositories.nodes.map((e) => e.languages.edges)) {
         for (const langNode of repo) {
             const langName = langNode.node.name;
-            if (ignored.includes(langName.toLowerCase())) {
+            if (ignoredLangs.includes(langName.toLowerCase())) {
                 continue;
             }
 
@@ -76,7 +66,7 @@ query getUserRepositories($username: String!) {
     for (let i = 0; i < sortedLangs.length; i++) {
         if (i >= 10) {
             langsSvg += `
-        <text x="108" y="${y}" dominant-baseline="hanging" fill="white">
+        <text x="112" y="${y}" dominant-baseline="hanging" fill="white">
             and ${sortedLangs.length - i} more...
         </text>`;
             break;
@@ -110,22 +100,19 @@ query getUserRepositories($username: String!) {
         const color = `hsl(${h}, ${s * 200}%, 50%)`;
 
         langsSvg += `
-            <text x="108" y="${y}" dominant-baseline="hanging" fill="${color}">
+            <text x="112" y="${y}" dominant-baseline="hanging" fill="${color}">
                 - ${lang}: ${Math.round((data.count / totalCount) * 100 * pow) / pow}%
             </text>`;
         y += 18;
     }
 
     return new Response(
-        template
+        terminal
+            .replaceAll('<!-- %USERNAME% -->', username)
+            .replaceAll('<!-- %NAME% -->', response.data.user.name)
             .replaceAll('<!-- %LANGS% -->', langsSvg)
-            .replaceAll('%AVATAR_URL%', await fetchDataUrl('https://avatars.githubusercontent.com/u/44139611?v=4'))
-            .replaceAll(
-                '%FONT_URL%',
-                await fetchDataUrl(
-                    'https://fonts.gstatic.com/s/sourcecodepro/v23/HI_diYsKILxRpg3hIP6sJ7fM7PqPMcMnZFqUwX28DBKXtMlrSlcZZJmOpw.woff'
-                )
-            ),
+            .replaceAll('%AVATAR_URL%', await fetchDataUrl(response.data.user.avatarUrl))
+            .replaceAll('%FONT_URL%', `data:font/woff;base64,${sourceCodePro}`),
         {
             headers: {
                 'Content-Type': 'image/svg+xml',

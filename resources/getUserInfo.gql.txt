@@ -1,0 +1,19 @@
+query getUserInfo($username: String!, $avatarSize: Int) {
+    user(login: $username) {
+        avatarUrl(size: $avatarSize)
+        name
+        repositories(ownerAffiliations: OWNER, isFork: false, privacy: PUBLIC, first: 100) {
+            nodes {
+                languages(first: 10, orderBy: { field: SIZE, direction: DESC }) {
+                    edges {
+                        size
+                        node {
+                            name
+                            color
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

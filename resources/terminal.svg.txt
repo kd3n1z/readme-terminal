@@ -14,7 +14,7 @@
             <rect x="16" y="16" width="600" height="300" rx="8" />
         </clipPath>
         <clipPath id="image-clip">
-            <rect x="22" y="64" width="80" height="80" rx="16" />
+            <rect x="22" y="70" width="80" height="80" rx="16" />
         </clipPath>
     </defs>
     <g font-size="14"
@@ -28,8 +28,7 @@
         <!-- title -->
         <rect x="16" y="16" width="600" height="28" fill="#353535" clip-path="url(#title-corners)" />
         <text x="308" y="30" text-anchor="middle" dominant-baseline="central"
-            fill="#B2B2B2">
-            github.com/kd3n1z
+            fill="#B2B2B2"> github.com/<!-- %USERNAME% -->
         </text>
         <rect x="16" y="44" width="600" height="1" fill="#020202" />
 
@@ -46,16 +45,16 @@
         <g>
             <image href="%AVATAR_URL%" x="22" y="70"
                 width="80" height="80" clip-path="url(#image-clip)" />
-            <text x="108" y="70" dominant-baseline="hanging" fill="white">
-                Denis Komarkov
+            <text x="112" y="70" dominant-baseline="hanging" fill="white">
+                <!-- %NAME% -->
             </text>
-            <text x="108" y="88" dominant-baseline="hanging" fill="white">
+            <text x="112" y="88" dominant-baseline="hanging" fill="white">
                 game, software &amp; full stack developer
             </text>
-            <text x="108" y="106" dominant-baseline="hanging" fill="white">
+            <text x="112" y="106" dominant-baseline="hanging" fill="white">
                 -------------------------------------
             </text>
-            <text x="108" y="124" dominant-baseline="hanging" fill="white">
+            <text x="112" y="124" dominant-baseline="hanging" fill="white">
                 most used languages:
             </text>
 
