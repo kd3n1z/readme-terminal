@@ -26,7 +26,7 @@ export default async (req) => {
                 query: getUserInfoQuery,
                 variables: {
                     username,
-                    avatarSize: 80,
+                    avatarSize: 160,
                 },
             }),
         })
